@@ -24,9 +24,12 @@ export function header() {
         .getElementById('app')
         .insertAdjacentHTML('beforeend', HTML);
 
+    const mainHeaderDOM = document.querySelector('.main-header');
     const hamburgerDOM = document.querySelector('.hamburger');
-    const mobileHeaderDOM = document.querySelector('.mobile-main-header');
     const closeDOM = document.querySelector('.close');
+    const mobileHeaderDOM = document.querySelector('.mobile-main-header');
+    const mobileMenuPlusDOM = mobileHeaderDOM.querySelectorAll('.fa-plus');
+    const mobileMenuMinusDOM = mobileHeaderDOM.querySelectorAll('.fa-minus');
 
     hamburgerDOM.addEventListener('click', () => {
         mobileHeaderDOM.classList.add('show');
@@ -36,9 +39,29 @@ export function header() {
         mobileHeaderDOM.classList.remove('show');
     });
 
+    for (const plusDOM of mobileMenuPlusDOM) {
+        plusDOM.addEventListener('click', () => {
+            plusDOM.parentNode.parentNode.classList.add('expanded');
+        });
+    }
+
+    for (const minusDOM of mobileMenuMinusDOM) {
+        minusDOM.addEventListener('click', () => {
+            minusDOM.parentNode.parentNode.classList.remove('expanded');
+        });
+    }
+
     addEventListener('keydown', event => {
         if (event.key === 'Escape') {
             mobileHeaderDOM.classList.remove('show');
+        }
+    });
+
+    addEventListener('scroll', () => {
+        if (scrollY > 50) {
+            mainHeaderDOM.classList.add('header-fixed');
+        } else {
+            mainHeaderDOM.classList.remove('header-fixed');
         }
     });
 }
@@ -55,9 +78,9 @@ function headerMenu(data) {
             }
 
             HTML += `
-                <div>
-                    <a class="link" href="${link.href}">${link.text}</a>
-                    <div>${subMenuHTML}</div>
+                <div class="dropdown">
+                    <a class="link" href="${link.href}">${link.text}<i class="fa fa-angle-down"></i></a>
+                    <div class="dropdown-content">${subMenuHTML}</div>
                 </div>`;
         } else {
             HTML += `<a class="link" href="${link.href}">${link.text}</a>`;
@@ -71,7 +94,25 @@ function mobileHeaderMenu(data) {
     let HTML = '';
 
     for (const link of data) {
-        HTML += `<a class="link" href="${link.href}">${link.text}</a>`;
+        if (link.subMenu) {
+            let subMenuHTML = '';
+
+            for (const subLink of link.subMenu) {
+                subMenuHTML += `<a class="link" href="${subLink.href}">${subLink.text}</a>`;
+            }
+
+            HTML += `
+                <div class="dropdown">
+                    <a class="link" href="${link.href}">
+                        ${link.text}
+                        <i class="fa fa-plus"></i>
+                        <i class="fa fa-minus"></i>
+                    </a>
+                    <div class="dropdown-content">${subMenuHTML}</div>
+                </div>`;
+        } else {
+            HTML += `<a class="link" href="${link.href}">${link.text}</a>`;
+        }
     }
 
     return `<nav class="main-nav">${HTML}</nav>`;
