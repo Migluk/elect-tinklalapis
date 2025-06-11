@@ -17,7 +17,6 @@ import { testimonials } from "../components/testimonials.js";
 
 header();
 hero();
-testimonials();
 aboutUs();
 services();
 portfolioGalleryMultiSelect();
